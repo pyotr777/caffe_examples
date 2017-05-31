@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         cmake \
         git \
         wget \
+        unzip \
         libatlas-base-dev \
         libboost-all-dev \
         libgflags-dev \
@@ -51,12 +52,9 @@ ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
 ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
 RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
-
-#RUN pip install -U nose
-#RUN pip install -U matplotlib
-#RUN pip install -U Pillow
-#RUN pip install -U html5lib==1.0b8
-#RUN pip install -U jupyter
+RUN pip install -U pyyaml
+RUN pip install -U scikit-image
+RUN pip install -U protobuf
 
 WORKDIR /root
 CMD /bin/bash
