@@ -1,4 +1,4 @@
-name: "LeNet"
+name: "transferl_cnn"
 layer {
   name: "mnist"
   type: "Data"
@@ -11,7 +11,7 @@ layer {
     scale: 0.00390625
   }
   data_param {
-    source: "examples/mnist/mnist_train_lmdb"
+    source: "mnist/mnist_train_lmdb"
     batch_size: 64
     backend: LMDB
   }
@@ -28,7 +28,7 @@ layer {
     scale: 0.00390625
   }
   data_param {
-    source: "examples/mnist/mnist_test_lmdb"
+    source: "mnist/mnist_test_lmdb"
     batch_size: 100
     backend: LMDB
   }
@@ -42,14 +42,14 @@ layer {
     lr_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 1
   }
   convolution_param {
-    num_output: 20
-    kernel_size: 5
+    num_output: 32
+    kernel_size: 3
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "gaussian"
     }
     bias_filler {
       type: "constant"
@@ -57,33 +57,28 @@ layer {
   }
 }
 layer {
-  name: "pool1"
-  type: "Pooling"
+  name: "act1"
+  type: "TanH"
   bottom: "conv1"
-  top: "pool1"
-  pooling_param {
-    pool: MAX
-    kernel_size: 2
-    stride: 2
-  }
+  top: "act"
 }
 layer {
   name: "conv2"
   type: "Convolution"
-  bottom: "pool1"
+  bottom: "act"
   top: "conv2"
   param {
     lr_mult: 1
   }
   param {
-    lr_mult: 2
+    lr_mult: 1
   }
   convolution_param {
-    num_output: 50
-    kernel_size: 5
+    num_output: 32
+    kernel_size: 3
     stride: 1
     weight_filler {
-      type: "xavier"
+      type: "gaussian"
     }
     bias_filler {
       type: "constant"
@@ -91,10 +86,16 @@ layer {
   }
 }
 layer {
-  name: "pool2"
-  type: "Pooling"
+  name: "relu2"
+  type: "ReLU"
   bottom: "conv2"
-  top: "pool2"
+  top: "relu2"
+}
+layer {
+  name: "pool"
+  type: "Pooling"
+  bottom: "relu2"
+  top: "pool"
   pooling_param {
     pool: MAX
     kernel_size: 2
@@ -102,37 +103,27 @@ layer {
   }
 }
 layer {
-  name: "ip1"
-  type: "InnerProduct"
-  bottom: "pool2"
-  top: "ip1"
-  param {
-    lr_mult: 1
-  }
-  param {
-    lr_mult: 2
-  }
-  inner_product_param {
-    num_output: 500
-    weight_filler {
-      type: "xavier"
-    }
-    bias_filler {
-      type: "constant"
-    }
+  name: "flatten"
+  type: "Flatten"
+  bottom: "pool"
+  top: "flatten"
+}
+
+layer {
+  name: "dropout_1"
+  type: "Dropout"
+  bottom: "flatten"
+  top: "dropout_1"
+  dropout_param {
+    dropout_ratio: 0.25
   }
 }
+
 layer {
-  name: "relu1"
-  type: "ReLU"
-  bottom: "ip1"
-  top: "ip1"
-}
-layer {
-  name: "ip2"
+  name: "dense_1"
   type: "InnerProduct"
-  bottom: "ip1"
-  top: "ip2"
+  bottom: "dropout_1"
+  top: "dense_1"
   param {
     lr_mult: 1
   }
@@ -142,7 +133,7 @@ layer {
   inner_product_param {
     num_output: 10
     weight_filler {
-      type: "xavier"
+      type: "gaussian"
     }
     bias_filler {
       type: "constant"
@@ -152,17 +143,14 @@ layer {
 layer {
   name: "accuracy"
   type: "Accuracy"
-  bottom: "ip2"
+  bottom: "dense_1"
   bottom: "label"
   top: "accuracy"
-  include {
-    phase: TEST
-  }
 }
 layer {
   name: "loss"
   type: "SoftmaxWithLoss"
-  bottom: "ip2"
+  bottom: "dense_1"
   bottom: "label"
   top: "loss"
 }
