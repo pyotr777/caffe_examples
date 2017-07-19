@@ -56,5 +56,16 @@ RUN pip install -U pyyaml
 RUN pip install -U scikit-image
 RUN pip install -U protobuf
 
-WORKDIR /root
-CMD /bin/bash
+# Install Jupyter etc.
+RUN pip install -U matplotlib
+RUN pip install -U Pillow
+RUN pip install -U sklearn
+RUN pip install -U chainer
+RUN pip install -U html5lib==1.0b8
+RUN pip install -U jupyter
+RUN pip install h5py
+
+WORKDIR /root/
+CMD jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --NotebookApp.token=""
+
+# docker build -f Dockerfile-caffe -t pyotr777/caffe-jupyter .
