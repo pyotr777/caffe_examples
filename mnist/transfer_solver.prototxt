@@ -1,0 +1,15 @@
+train_net: "mnist/transfer_train.prototxt"
+test_net: "mnist/transfer_test.prototxt"
+test_iter: 1000
+test_interval: 938
+base_lr: 0.01
+display: 100
+max_iter: 11257
+lr_policy: "fixed"
+momentum: 0.9
+weight_decay: 0.0005
+snapshot: 0
+snapshot_prefix: "mnist/custom_net"
+solver_mode: GPU
+random_seed: 831486
+type: "Adam"
