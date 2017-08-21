@@ -8,8 +8,9 @@ max_iter: 11257
 lr_policy: "fixed"
 momentum: 0.9
 weight_decay: 0.0005
-snapshot: 0
-snapshot_prefix: "mnist/custom_net"
+snapshot: 5000
+snapshot_prefix: "mnist/snapshots"
 solver_mode: GPU
 random_seed: 831486
 type: "Adam"
+
